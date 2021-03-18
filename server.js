@@ -25,12 +25,25 @@ app.post('/api/users', async (req, res, next) => {
   }
 });
 
+app.put('/api/users/:id', async (req, res, next) => {
+  try {
+    const user = await User.findByPk(req.params.id);
+    res.send(await user.update(req.body));
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.get('/api/things', async (req, res, next) => {
   try {
     res.send(await Thing.findAll());
   } catch (error) {
     next(error);
   }
+});
+//Default error handler / this is your last route
+app.use((err, req, res, next) => {
+  res.status(500).send({ error: err });
 });
 
 const init = async () => {
@@ -54,6 +67,10 @@ const db = new Sequelize(
 const User = db.define('user', {
   name: {
     type: DataTypes.STRING,
+    unique: true,
+    validate: {
+      notEmpty: true,
+    },
   },
 });
 

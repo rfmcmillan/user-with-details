@@ -20,9 +20,14 @@ const Nav = (props) => {
       >
         Users({props.users.length}){' '}
       </Link>
-      <button onClick={() => props.create(faker.name.firstName())}>
+      <Link
+        to="/users/create"
+        className={
+          props.location.pathname === '/users/create' ? 'selected' : ''
+        }
+      >
         Create User
-      </button>
+      </Link>
     </nav>
   );
 };

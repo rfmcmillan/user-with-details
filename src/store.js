@@ -2,6 +2,7 @@ import { createStore, combineReducers, applyMiddleware } from 'redux';
 const LOAD_USERS = 'LOAD_USERS';
 const CREATE = 'CREATE';
 const LOAD_THINGS = 'LOAD_THINGS';
+const UPDATE = 'UPDATE';
 import axios from 'axios';
 import thunk from 'redux-thunk';
 //import logger from 'redux-logger';
@@ -20,6 +21,11 @@ const usersReducer = (state = [], action) => {
   }
   if (action.type === CREATE) {
     state = [...state, action.user];
+  }
+  if (action.type === UPDATE) {
+    state = state.map((user) =>
+      user.id !== action.user.id ? user : action.user
+    );
   }
   return state;
 };
@@ -64,19 +70,12 @@ const store = createStore(reducer, applyMiddleware(thunk));
 // the same type of action multiple times.
 // - it also makes your code more readable, I think
 
-const _loadUsers = (users) => {
-  return {
-    type: LOAD_USERS,
-    users,
-  };
-};
-
-const _createUser = (user) => {
-  return {
-    type: CREATE,
-    user,
-  };
-};
+//------------------------------------------------------
+//These are functions that return the thunks that then dispatch the action creators that return the actual action object.
+//- The redux-thunk middleware makes it so that the thunk receives two
+// arguments: dispatch, so the thunk can dispatch the action and getState, so it can access the current state.
+//The getState can be useful fro fetching new data
+//----------------------------------------------------------------------------
 
 const _loadThings = (things) => {
   return {
@@ -84,16 +83,18 @@ const _loadThings = (things) => {
     things,
   };
 };
-//------------------------------------------------------
-//These are functions that return the thunks that then dispatch the action creators that return the actual action object.
-//- The redux-thunk middleware makes it so that the thunk receives two
-// arguments: dispatch, so the thunk can dispatch the action and getState, so it can access the current state.
-//The getState can be useful fro fetching new data
-//----------------------------------------------------------------------------
+
 const loadThings = () => {
   return async (dispatch) => {
     const things = (await axios.get('/api/things')).data;
     dispatch(_loadThings(things));
+  };
+};
+
+const _loadUsers = (users) => {
+  return {
+    type: LOAD_USERS,
+    users,
   };
 };
 
@@ -104,13 +105,31 @@ const loadUsers = () => {
   };
 };
 
-const createUser = (name) => {
+const _createUser = (user) => {
+  return {
+    type: CREATE,
+    user,
+  };
+};
+
+const createUser = (name, history) => {
   return async (dispatch) => {
     const user = (await axios.post('/api/users', { name })).data;
     dispatch(_createUser(user));
+    history.push(`/users/${user.id}`);
+  };
+};
+
+const _updateUser = (user) => ({ type: UPDATE, user });
+
+const updateUser = (id, name, history) => {
+  return async (dispatch) => {
+    const user = (await axios.put(`/api/users/${id}`, { name })).data;
+    dispatch(_updateUser(user));
+    history.push('/users');
   };
 };
 //-----------------------------------------------------------
 
 export default store;
-export { loadUsers, loadThings, createUser };
+export { loadUsers, loadThings, createUser, updateUser };

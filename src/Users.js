@@ -7,7 +7,6 @@ import { Link } from 'react-router-dom';
 const Users = ({ users, createUser }) => {
   return (
     <div>
-      <button onClick={() => createUser(Math.random())}>Create User</button>
       <ul>
         {users.map((user) => {
           return (

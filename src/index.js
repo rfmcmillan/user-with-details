@@ -5,7 +5,9 @@ import store, { loadUsers, loadThings, createUser } from './store';
 import Nav from './Nav';
 import Users from './Users';
 import User from './User';
-import { HashRouter as Router, Route } from 'react-router-dom';
+import { Switch, HashRouter as Router, Route } from 'react-router-dom';
+import Create from './Create';
+import Update from './Update';
 
 const Home = () => <hr />;
 
@@ -40,7 +42,11 @@ const App = connect(
             <Route component={Nav} />
             <Route component={Home} path="/" exact />
             <Route component={Users} path="/users" exact />
-            <Route component={User} path="/users/:id" />
+            <Switch>
+              <Route component={Create} path="/users/create" />
+              <Route component={User} path="/users/:id" exact />
+            </Switch>
+            <Route component={Update} path="/users/:id/update" />
           </div>
         </Router>
       );
