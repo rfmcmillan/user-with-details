@@ -3,6 +3,7 @@ const LOAD_USERS = 'LOAD_USERS';
 const CREATE = 'CREATE';
 const LOAD_THINGS = 'LOAD_THINGS';
 const UPDATE = 'UPDATE';
+const DESTROY = 'DESTROY';
 import axios from 'axios';
 import thunk from 'redux-thunk';
 //import logger from 'redux-logger';
@@ -26,6 +27,9 @@ const usersReducer = (state = [], action) => {
     state = state.map((user) =>
       user.id !== action.user.id ? user : action.user
     );
+  }
+  if (action.type === DESTROY) {
+    state = state.filter((user) => user.id !== action.user.id);
   }
   return state;
 };
@@ -120,6 +124,23 @@ const createUser = (name, history) => {
   };
 };
 
+const _destroyUser = (user) => {
+  return {
+    type: DESTROY,
+    user,
+  };
+};
+
+const destroyUser = (user, history) => {
+  return async (dispatch) => {
+    await axios.delete(`/api/users/${user.id}`);
+    dispatch(_destroyUser(user));
+    //history.push pushes a new entry onto the history stack; it's react-router's way of doing res.redirect
+    //the browser then shows the topmost entry on the history stack, effectively redirecting you to that page
+    await history.push(`/users`);
+  };
+};
+
 const _updateUser = (user) => ({ type: UPDATE, user });
 
 const updateUser = (id, name, history) => {
@@ -132,4 +153,4 @@ const updateUser = (id, name, history) => {
 //-----------------------------------------------------------
 
 export default store;
-export { loadUsers, loadThings, createUser, updateUser };
+export { loadUsers, loadThings, createUser, updateUser, destroyUser };
