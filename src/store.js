@@ -137,7 +137,7 @@ const destroyUser = (user, history) => {
     dispatch(_destroyUser(user));
     //history.push pushes a new entry onto the history stack; it's react-router's way of doing res.redirect
     //the browser then shows the topmost entry on the history stack, effectively redirecting you to that page
-    await history.push(`/users`);
+    history.push('/users');
   };
 };
 

@@ -20,6 +20,7 @@ class Create extends Component {
     ev.preventDefault();
     try {
       await this.props.create(this.state.name);
+      console.log('create called');
     } catch (error) {
       this.setState({ error: error.response.data.error });
     }
@@ -37,8 +38,11 @@ class Create extends Component {
   }
 }
 
-export default connect(null, (dispatch, { history }) => {
+const mapDispatchToProps = (dispatch, { history }) => {
+  console.log(history);
   return {
     create: (name) => dispatch(createUser(name, history)),
   };
-})(Create);
+};
+
+export default connect(null, mapDispatchToProps)(Create);

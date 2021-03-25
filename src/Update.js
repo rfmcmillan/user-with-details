@@ -9,7 +9,6 @@ class Update extends Component {
       name: this.props.user.id ? this.props.user.name : '',
       error: '',
     };
-    console.log(this.props.user);
     this.onChange = this.onChange.bind(this);
     this.onSave = this.onSave.bind(this);
   }
